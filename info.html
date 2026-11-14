@@ -64,6 +64,8 @@
     .sched li:last-child { border-bottom: 0; }
     .sched .t { font-weight: 700; color: var(--copper); }
     .who { font-size: 17px; margin: 0; }
+    .welcome { border-top: 4px solid var(--gold); padding: 14px 18px; }
+    .pma { margin: 0; font-size: 17px; line-height: 1.4; text-align: center; }
     .phone { font-size: 20px; font-weight: 700; margin: 2px 0 0; user-select: all; }
     .loading { text-align: center; color: #d9d6ee; padding: 20px 0; }
     .error { color: #a23a22; background: #fbe6dd; border-radius: 10px; padding: 10px 14px; font-size: 14px; }
@@ -108,6 +110,11 @@
 
     <div id="content" hidden>
       <div class="update" id="update" role="status" hidden><b>Update</b><span id="updateText"></span></div>
+
+      <!-- PMA reminder. To change the wording, edit it here and re-upload. -->
+      <div class="card welcome">
+        <p class="pma">Don't forget your <b>$20 cash or check</b> to join us as a member.</p>
+      </div>
 
       <div class="card">
         <h2>Where</h2>
