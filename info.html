@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ordination Day Guide</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <meta name="description" content="Directions, schedule and what to bring for Sunday's ordination.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ordination Day Guide">
+  <meta property="og:description" content="Directions, the schedule and who to call, all in one place. Tap to open.">
+  <meta property="og:image" content="https://tole-admin.github.io/ordination-weekend/preview-info.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://tole-admin.github.io/ordination-weekend/info.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&display=swap">
+  <!--
+    Ordination Sunday guest info page (GitHub version)
+    Lives at: https://tole-admin.github.io/ordination-weekend/info.html
+    PUBLIC FILE: no address, names or numbers in here. Everything comes from
+    the Google Apps Script, only when the link carries the guest code after #.
+    Organizers change it all from organizer.html (or the Info/Schedule tabs).
+  -->
+  <style>
+    :root {
+      --navy: #1a1f55; --navy-glow: #2b2f73; --copper: #c27b3a; --amber: #f0a54a;
+      --gold: #ffd690; --cream: #fff8ef; --ink: #2d2a3e; --muted: #6e6a84; --sage: #6fa98b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0 16px 48px; color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(ellipse at 50% 0, var(--navy-glow) 0, var(--navy) 420px) fixed, var(--navy);
+    }
+    .wrap { max-width: 520px; margin: 0 auto; }
+    header { text-align: center; padding: 24px 0 10px; }
+    header svg { width: 84px; height: 84px; }
+    h1 { font-family: "EB Garamond", Georgia, serif; font-weight: 600; font-size: 34px; margin: 2px 0 2px; color: var(--gold); }
+    .date { color: #d9d6ee; font-size: 17px; margin: 0 0 16px; }
+    .update {
+      background: var(--gold); color: var(--navy); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;
+      font-size: 16px; line-height: 1.45; white-space: pre-line;
+    }
+    .update b { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+    .card { background: var(--cream); border-radius: 18px; padding: 18px; margin-bottom: 14px; box-shadow: 0 8px 26px rgba(0,0,0,.25); }
+    h2 { font-family: "EB Garamond", Georgia, serif; font-weight: 600; font-size: 23px; color: var(--navy); margin: 0 0 8px; }
+    .addr { font-size: 18px; font-weight: 600; margin: 0 0 4px; user-select: all; }
+    .note { font-size: 15px; color: var(--muted); line-height: 1.45; margin: 6px 0 0; white-space: pre-line; }
+    .btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .btn {
+      flex: 1 1 140px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      min-height: 50px; padding: 10px 14px; border-radius: 14px; text-decoration: none; font-weight: 700; font-size: 16px;
+      background: var(--copper); color: #fff; box-shadow: 0 6px 16px rgba(194,123,58,.3);
+    }
+    .btn.alt { background: #fff; color: var(--copper); border: 2px solid var(--copper); box-shadow: none; }
+    .btn.green { background: var(--sage); box-shadow: 0 6px 16px rgba(111,169,139,.3); }
+    .btn:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .sched { list-style: none; margin: 0; padding: 0; }
+    .sched li { display: grid; grid-template-columns: 120px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid #ecd9c4; font-size: 16px; }
+    .sched li:last-child { border-bottom: 0; }
+    .sched .t { font-weight: 700; color: var(--copper); }
+    .who { font-size: 17px; margin: 0; }
+    .phone { font-size: 20px; font-weight: 700; margin: 2px 0 0; user-select: all; }
+    .loading { text-align: center; color: #d9d6ee; padding: 20px 0; }
+    .error { color: #a23a22; background: #fbe6dd; border-radius: 10px; padding: 10px 14px; font-size: 14px; }
+    .retry { margin-top: 10px; min-height: 44px; border: 0; border-radius: 12px; background: var(--copper); color: #fff; font: inherit; font-weight: 700; padding: 8px 16px; }
+    footer { text-align: center; font-size: 13px; color: #a7a4c9; margin-top: 22px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <defs><filter id="soft"><feGaussianBlur stdDeviation="4"/></filter></defs>
+        <g transform="translate(50 52) scale(1.25) translate(-50 -50)">
+          <circle cx="50" cy="44" r="28" fill="#f0a54a" opacity=".3" filter="url(#soft)"/>
+          <g fill="none" stroke="#ffd690" stroke-linecap="round">
+            <path d="M50 61 C48 47 52 37 50 28" stroke-width="2.2"/>
+            <path d="M50 37 C45 24 33 27 31 58" stroke-width="1.6"/>
+            <path d="M50 37 C55 24 67 27 69 58" stroke-width="1.6"/>
+            <path d="M50 44 C45 34 38 38 39 59" stroke-width="1.6"/>
+            <path d="M50 44 C55 34 62 38 61 59" stroke-width="1.6"/>
+          </g>
+          <path d="M27 59 C31 72 69 72 73 59 Z" fill="#10143f" stroke="#c27b3a" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M29 61.5 Q50 65 71 61.5" fill="none" stroke="#f0a54a" stroke-width="1"/>
+          <path d="M50 17 C54 22 54 27 50 28 C46 27 46 22 50 17 Z" fill="#fff6dd"/>
+        </g>
+      </svg>
+      <h1 id="title">Ordination Sunday</h1>
+      <p class="date" id="date"></p>
+    </header>
+
+    <div class="card" id="noAccess" hidden>
+      <h2>Please open this from the link you were texted</h2>
+      <p class="note" style="margin:0">If you opened it inside another app and see this, tap ⋯ and choose "Open in browser."</p>
+    </div>
+
+    <div id="loading" class="loading">Loading…</div>
+    <div class="card" id="loadError" hidden>
+      <p class="error" id="loadErrorMsg" style="margin:0"></p>
+      <button type="button" class="retry" id="retryBtn">Try again</button>
+    </div>
+
+    <div id="content" hidden>
+      <div class="update" id="update" role="status" hidden><b>Update</b><span id="updateText"></span></div>
+
+      <div class="card">
+        <h2>Where</h2>
+        <p class="addr" id="address"></p>
+        <p class="note" id="directions" hidden></p>
+        <div class="btns">
+          <a class="btn" id="gmaps" target="_blank" rel="noopener">📍 Directions (Google)</a>
+          <a class="btn alt" id="amaps" target="_blank" rel="noopener">Apple Maps</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Schedule</h2>
+        <ul class="sched" id="schedule"></ul>
+      </div>
+
+      <div class="card" id="helpCard" hidden>
+        <h2>Lost or running late?</h2>
+        <p class="who">Text or call <b id="helpName"></b></p>
+        <p class="phone" id="helpPhone"></p>
+        <div class="btns">
+          <a class="btn green" id="helpText">💬 Text</a>
+          <a class="btn alt" id="helpCall">📞 Call</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Bring something to share</h2>
+        <p class="note" style="margin-top:0">Ken is preparing a meal for after the ceremony. If you'd like to add to the table, pick up to three things.</p>
+        <div class="btns"><a class="btn" id="bringLink">See what's needed</a></div>
+      </div>
+    </div>
+
+    <footer>From the TOLE community, with love.</footer>
+  </div>
+
+  <script>
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzEtwPMZRZIXtuZOMJ1gZ8EXX_fltgSxkctYq4QZbpOMRWVo_2HcyvtL-QFl7qdVkbw/exec';
+    var REFRESH_MS = 60000;   // pick up organizer changes every minute
+    var KEY = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim();
+    var loaded = false;
+
+    function $(id) { return document.getElementById(id); }
+
+    function callScript(fn, args) {
+      var url = SCRIPT_URL + '?fn=' + encodeURIComponent(fn) +
+        '&args=' + encodeURIComponent(JSON.stringify([KEY].concat(args || [])));
+      return fetch(url, { method: 'GET', credentials: 'omit', redirect: 'follow' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('The server answered with an error (' + r.status + ').');
+          return r.json();
+        })
+        .then(function (res) {
+          if (!res || !res.ok) throw new Error((res && res.error) || 'Something went wrong.');
+          return res.data;
+        });
+    }
+
+    // "(828) 555-1234" -> "+18285551234" for the text and call buttons
+    function dialable(p) {
+      var d = String(p || '').replace(/[^\d+]/g, '');
+      if (/^\d{10}$/.test(d)) d = '+1' + d;
+      else if (/^1\d{10}$/.test(d)) d = '+' + d;
+      return d;
+    }
+
+    function render(data) {
+      var info = (data && data.info) || {};
+      $('title').textContent = info.title || 'Ordination Sunday';
+      document.title = info.title || 'Ordination Sunday';
+      $('date').textContent = info.date || '';
+
+      $('update').hidden = !info.update;
+      $('updateText').textContent = info.update || '';
+
+      $('address').textContent = info.address || '';
+      $('directions').hidden = !info.directions;
+      $('directions').textContent = info.directions || '';
+      var q = encodeURIComponent(info.address || '');
+      $('gmaps').href = 'https://www.google.com/maps/dir/?api=1&destination=' + q;
+      $('amaps').href = 'https://maps.apple.com/?daddr=' + q;
+
+      var ul = $('schedule');
+      ul.innerHTML = '';
+      ((data && data.schedule) || []).forEach(function (s) {
+        var li = document.createElement('li');
+        var t = document.createElement('span'); t.className = 't'; t.textContent = s.time;
+        var w = document.createElement('span'); w.textContent = s.what;
+        li.appendChild(t); li.appendChild(w); ul.appendChild(li);
+      });
+
+      var num = dialable(info.helpPhone);
+      $('helpCard').hidden = !num;
+      $('helpName').textContent = info.helpName || 'us';
+      $('helpPhone').textContent = info.helpPhone || '';
+      $('helpText').href = 'sms:' + num;
+      $('helpCall').href = 'tel:' + num;
+
+      $('bringLink').href = 'index.html#' + encodeURIComponent(KEY);
+
+      $('loading').hidden = true;
+      $('loadError').hidden = true;
+      $('content').hidden = false;
+      loaded = true;
+    }
+
+    function load(quiet) {
+      if (!quiet) { $('loading').hidden = false; $('loadError').hidden = true; }
+      callScript('infoGet')
+        .then(render)
+        .catch(function (err) {
+          if (err.message === 'NO_ACCESS') { $('loading').hidden = true; $('noAccess').hidden = false; return; }
+          if (quiet && loaded) return;   // keep showing what we have
+          $('loading').hidden = true;
+          $('loadErrorMsg').textContent = "Couldn't load the details. Check your connection and try again. (" + err.message + ')';
+          $('loadError').hidden = false;
+        });
+    }
+
+    $('retryBtn').addEventListener('click', function () { load(false); });
+
+    if (!KEY) {
+      $('loading').hidden = true;
+      $('noAccess').hidden = false;
+    } else {
+      load(false);
+      setInterval(function () { if (!document.hidden) load(true); }, REFRESH_MS);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden && loaded) load(true); });
+    }
+  </script>
+</body>
+</html>
