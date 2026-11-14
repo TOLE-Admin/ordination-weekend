@@ -186,6 +186,7 @@
         $('tab-' + n).setAttribute('aria-selected', String(n === name));
         $('panel-' + n).hidden = n !== name;
       });
+      fitAll($('panel-' + name));
       try { localStorage.setItem('kitchenTab', name); } catch (e) {}
     }
 
@@ -218,10 +219,19 @@
         });
         box.appendChild(makeAddRow(list, cfg));
       });
+      fitAll();
     }
 
     // Grows an item box so long names wrap instead of getting cut off
-    function fit(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+    function fit(t) {
+      if (!t.offsetParent) return;   // hidden tab: sized when it opens
+      t.style.height = 'auto';
+      t.style.height = t.scrollHeight + 'px';
+    }
+    // Sizes every item box on the open tab (or the whole page), right away
+    function fitAll(root) {
+      Array.prototype.forEach.call((root || document).querySelectorAll('.row textarea'), fit);
+    }
 
     function makeRow(l, cfg) {
       var row = document.createElement('div');
@@ -233,10 +243,10 @@
       var itm = document.createElement('textarea');
       itm.rows = 1; itm.className = 'itm'; itm.value = l.item;
       itm.addEventListener('input', function () { fit(itm); });
-      setTimeout(function () { fit(itm); }, 0);
       itm.setAttribute('aria-label', 'Item');
-      var amt = document.createElement('input');
-      amt.type = 'text'; amt.className = 'amt'; amt.value = l.amount;
+      var amt = document.createElement('textarea');
+      amt.rows = 1; amt.className = 'amt'; amt.value = l.amount;
+      amt.addEventListener('input', function () { fit(amt); });
       amt.setAttribute('aria-label', cfg.amount + ' for ' + l.item);
       var del = document.createElement('button');
       del.type = 'button'; del.className = 'del'; del.textContent = '×';
@@ -347,6 +357,19 @@
 
     $('retryBtn').addEventListener('click', function () { load(false); });
     $('printBtn').addEventListener('click', function () { window.print(); });
+
+    // Before printing, open every tab for a moment so all boxes get sized
+    var openTab = 'shopping';
+    window.addEventListener('beforeprint', function () {
+      ['shopping', 'menu', 'equipment'].forEach(function (n) {
+        if ($('tab-' + n).getAttribute('aria-selected') === 'true') openTab = n;
+        $('panel-' + n).hidden = false;
+      });
+      fitAll();
+    });
+    window.addEventListener('afterprint', function () { showTab(openTab); });
+    // Turning the phone changes the width, so re-size
+    window.addEventListener('resize', function () { fitAll(); });
 
     if (!KEY) {
       showNoAccess();
