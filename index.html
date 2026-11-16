@@ -1,449 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TOLE Events</title>
-<base target="_top">
-<!-- Keeps search engines from listing this page. Share previews still work. -->
-<meta name="robots" content="noindex">
-<!-- Icons: browser tab (favicon.png) and iPhone "Add to Home Screen" (icon-180.png) -->
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="icon-180.png">
-<!-- Share preview: the card people see when a link is texted or posted -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="TOLE Events">
-<meta property="og:description" content="RSVPs, rosters and check-in for Anchor and Academy.">
-<meta property="og:image" content="https://tole-admin.github.io/events/preview.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:url" content="https://tole-admin.github.io/events/">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0a53a8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  :root { --ink:#1b2333; --quiet:#5f6368; --line:#e3e6ea; --bg:#ffffff; --soft:#f4f6f9;
-          --c:#0a53a8; --cfg:#ffffff; --rose:#f8d7dc; --roseInk:#8a1c2c; --ok:#11734b; --gold:#E69B36; }
-  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body { margin:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         color:var(--ink); background:var(--soft); font-size:16px; line-height:1.4; }
-  button, input, select { font:inherit; color:inherit; }
-  .band { background:var(--c); color:var(--cfg); padding:14px 16px 14px; }
-  .band .kicker { font-size:12px; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
-  .band h1 { font-family:"EB Garamond", Georgia, serif; font-weight:600; font-size:26px; margin:2px 0 0; line-height:1.15; }
-  .band .sub { font-size:14px; opacity:.9; margin-top:4px; }
-  .band a { color:var(--cfg); font-size:14px; }
-  main { max-width:640px; margin:0 auto; padding:12px 12px 110px; }
-  .card { background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; }
-  .card h2 { font-size:16px; margin:0 0 10px; }
-  label.f { display:block; font-size:14px; font-weight:600; margin:12px 0 4px; }
-  label.f:first-child { margin-top:0; }
-  .hint { font-size:13px; color:var(--quiet); }
-  input[type=text], input[type=email], input[type=tel], input[type=date], input[type=search], select {
-    width:100%; font-size:16px; padding:10px 12px; border:1px solid #c9ced6; border-radius:10px; background:#fff; }
-  .two { display:flex; gap:10px; } .two > div { flex:1; min-width:0; }
-  .btn { border:0; border-radius:12px; padding:12px 16px; font-size:16px; font-weight:600;
-         background:var(--c); color:var(--cfg); cursor:pointer; }
-  .btn.wide { width:100%; }
-  .btn.ghost { background:#fff; color:var(--ink); border:1px solid #c9ced6; font-weight:500; }
-  .btn.small { padding:8px 12px; font-size:14px; border-radius:10px; }
-  .btn:disabled { opacity:.5; }
-  .seg { display:flex; background:var(--soft); border-radius:12px; padding:3px; gap:3px; }
-  .seg button { flex:1; border:0; background:none; padding:9px 6px; border-radius:10px; font-size:15px; cursor:pointer; }
-  .seg button[aria-pressed=true] { background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.12); font-weight:600; }
-  .err { color:#b10202; font-size:14px; margin-top:8px; }
-  .center { text-align:center; padding:40px 16px; color:var(--quiet); }
-
-  /* event list */
-  .ev { display:flex; gap:12px; align-items:center; width:100%; text-align:left; background:#fff; border:1px solid var(--line);
-        border-radius:14px; padding:12px 14px; margin-bottom:10px; cursor:pointer; }
-  .ev .d { flex:none; width:52px; text-align:center; border-radius:10px; padding:6px 0; color:#fff; }
-  .ev .d b { display:block; font-size:20px; line-height:1.1; } .ev .d span { font-size:12px; text-transform:uppercase; }
-  .ev .t { flex:1; min-width:0; } .ev .t b { display:block; } .ev .t span { font-size:13px; color:var(--quiet); }
-  .section { font-size:13px; font-weight:600; color:var(--quiet); text-transform:uppercase; letter-spacing:.06em; margin:18px 4px 8px; }
-
-  /* links */
-  .link { display:flex; gap:8px; align-items:center; margin-top:6px; }
-  .link code { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px;
-               background:var(--soft); padding:10px; border-radius:8px; }
-  details.card summary { font-weight:600; cursor:pointer; }
-  details.card .row { margin-top:12px; }
-
-  /* stats + search */
-  .stats { display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-bottom:10px; }
-  .stat { background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px 4px; text-align:center; }
-  .stat b { display:block; font-size:20px; } .stat span { font-size:12px; color:var(--quiet); }
-  .stat.rose { background:var(--rose); border-color:#efb7c0; }
-  .sticky { position:sticky; top:0; z-index:3; background:var(--soft); padding:8px 0; }
-  .chips { display:flex; gap:6px; overflow-x:auto; padding-top:8px; scrollbar-width:none; }
-  .chips::-webkit-scrollbar { display:none; }
-  .chip { flex:none; border:1px solid #c9ced6; background:#fff; border-radius:999px; padding:6px 12px; font-size:14px; cursor:pointer; }
-  .chip[aria-pressed=true] { background:var(--ink); color:#fff; border-color:var(--ink); }
-
-  /* people */
-  .p { background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:10px; }
-  .p.nopma { background:var(--rose); border-color:#efb7c0; }
-  .p.busy { opacity:.55; pointer-events:none; }
-  .p .top { display:flex; gap:10px; align-items:flex-start; }
-  .p .who { flex:1; min-width:0; }
-  .p .nm { font-weight:600; font-size:17px; }
-  .p .meta { font-size:13px; color:var(--quiet); overflow-wrap:anywhere; }
-  .p .tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
-  .tag { font-size:12px; font-weight:600; padding:3px 8px; border-radius:999px; background:var(--soft); }
-  .tag.no { background:#fff; color:var(--roseInk); border:1px solid #e79aa7; }
-  .tag.yes { background:#e3f1ea; color:var(--ok); }
-  .tag.new { background:#fff3cd; color:#7a5300; }
-  .ck { flex:none; border:2px solid var(--ok); background:#fff; color:var(--ok); border-radius:12px; padding:10px 12px;
-        font-weight:700; font-size:15px; cursor:pointer; min-width:104px; }
-  .ck.on { background:var(--ok); color:#fff; }
-  .acts { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-  .acts button, .acts select { border:1px solid #c9ced6; background:#fff; border-radius:10px; padding:8px 10px; font-size:14px; cursor:pointer; }
-  .acts select { width:auto; flex:1; min-width:150px; }
-  .acts button.on { background:var(--ink); color:#fff; border-color:var(--ink); }
-  .acts button.pma { border-color:var(--roseInk); color:var(--roseInk); font-weight:600; }
-
-  /* toast */
-  .toast { position:fixed; left:12px; right:12px; bottom:calc(14px + env(safe-area-inset-bottom)); max-width:616px; margin:0 auto;
-           background:var(--ink); color:#fff; border-radius:14px; padding:12px 14px; display:none; align-items:center; gap:12px;
-           z-index:10; box-shadow:0 6px 24px rgba(0,0,0,.25); }
-  .toast.show { display:flex; }
-  .toast span { flex:1; font-size:15px; }
-  .toast button { background:none; border:0; color:var(--gold); font-weight:700; font-size:16px; cursor:pointer; padding:4px 6px; }
-  /* Buttons dip when pressed and show a spinner while waiting */
-  .btn:active:not(:disabled) { transform:scale(.97); filter:brightness(.92); }
-  .working { pointer-events:none; }
-  .working::before { content:''; display:inline-block; width:14px; height:14px; margin-right:8px; vertical-align:-2px;
-    border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .7s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .working::before { animation:none; } }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ordination Sunday: Bring Something to Share</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <meta name="description" content="Pick up to three things to bring for the table after the ordination.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ordination Sunday: Bring Something to Share">
+  <meta property="og:description" content="Pick up to three things to bring for the table after the ordination. From the TOLE community, with love.">
+  <meta property="og:image" content="https://tole-admin.github.io/ordination-weekend/preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://tole-admin.github.io/ordination-weekend/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&display=swap">
+  <!--
+    Ordination Sunday guest food sign-up (GitHub version)
+    Lives at: https://tole-admin.github.io/ordination-weekend
+    PUBLIC FILE: no names or private details in here. The list comes from the
+    Google Apps Script, only when the link carries the code after the #.
+  -->
+  <style>
+    :root {
+      --navy: #1a1f55; --navy-glow: #2b2f73; --copper: #c27b3a; --amber: #f0a54a;
+      --gold: #ffd690; --cream: #fff8ef; --ink: #2d2a3e; --muted: #6e6a84;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0 16px 48px; color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(ellipse at 50% 0, var(--navy-glow) 0, var(--navy) 420px) fixed, var(--navy);
+    }
+    .wrap { max-width: 560px; margin: 0 auto; }
+    header { text-align: center; padding: 26px 0 8px; }
+    header svg { width: 88px; height: 88px; }
+    h1 { font-family: "EB Garamond", Georgia, serif; font-weight: 600; font-size: 31px; line-height: 1.15; margin: 4px 0 8px; color: var(--gold); }
+    .intro { font-size: 16px; line-height: 1.55; color: #d9d6ee; max-width: 480px; margin: 0 auto 22px; }
+    .card { background: var(--cream); border-radius: 18px; padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 26px rgba(0,0,0,.25); }
+    h2 { font-family: "EB Garamond", Georgia, serif; font-weight: 600; font-size: 23px; color: var(--navy); margin: 0 0 4px; }
+    .sub { font-size: 14px; color: var(--muted); margin: 0 0 14px; }
+    /* Each item is a real button: thumb-sized, works with a keyboard */
+    .item {
+      display: block; width: 100%; text-align: left; font: inherit; color: var(--ink);
+      background: #fff; border: 2px solid #ecd9c4; border-radius: 14px;
+      padding: 12px 14px 12px 46px; margin-bottom: 8px; min-height: 56px; cursor: pointer; position: relative;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .item::before {
+      content: ""; position: absolute; left: 14px; top: 15px; width: 20px; height: 20px;
+      border: 2px solid var(--copper); border-radius: 6px; background: #fff;
+    }
+    .item.selected { border-color: var(--copper); background: #fff3e4; }
+    .item.selected::before { background: var(--copper); box-shadow: inset 0 0 0 3px #fff3e4; }
+    .item:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .item .name { font-size: 16px; font-weight: 600; }
+    .item .bring { font-size: 14px; color: var(--muted); }
+    .item .spots { font-size: 13px; font-weight: 700; color: var(--copper); float: right; margin-left: 8px; }
+    .item .who { font-size: 14px; color: var(--copper); display: block; margin-top: 4px; }
+    .item:disabled { background: #f2eee8; border-color: #e5ddd3; color: #9c95a8; cursor: default; }
+    .item:disabled::before { content: "✓"; border-color: #b9b2c4; color: #8a8398; font-size: 14px; line-height: 17px; text-align: center; }
+    .item:disabled .spots, .item:disabled .who { color: #9c95a8; }
+    .item.dim { opacity: .55; }
+    label.field { display: block; font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+    input[type=text], input[type=email] {   /* 16px so iPhones don't zoom in */
+      width: 100%; border: 2px solid #ecd9c4; border-radius: 12px; padding: 12px 13px;
+      font-size: 16px; font-family: inherit; color: var(--ink); background: #fff;
+    }
+    input:focus { outline: none; border-color: var(--copper); }
+    .picked { font-size: 14px; color: var(--copper); margin: 10px 0 0; }
+    .btn {
+      width: 100%; margin-top: 18px; background: var(--copper); color: #fff; border: none; border-radius: 14px;
+      padding: 15px; min-height: 52px; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer;
+      box-shadow: 0 6px 16px rgba(194,123,58,.35);
+    }
+    .btn:disabled { opacity: .6; cursor: default; }
+    .btn.small { width: auto; padding: 10px 18px; min-height: 44px; font-size: 15px; box-shadow: none; margin-top: 10px; }
+    .error { color: #a23a22; background: #fbe6dd; border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-top: 14px; }
+    .loading { text-align: center; color: var(--muted); padding: 18px 0; }
+    #thanks { text-align: center; }
+    #thanks .big { font-size: 42px; }
+    #thanks p { font-size: 16px; line-height: 1.55; }
+    #thanks ul { text-align: left; display: inline-block; margin: 0 0 6px; padding-left: 20px; color: var(--copper); font-weight: 600; }
+    footer { text-align: center; font-size: 13px; color: #a7a4c9; margin-top: 26px; }
+    [hidden] { display: none !important; }
+  </style>
 </head>
 <body>
-<header class="band" id="band">
-  <div class="kicker" id="kick">TOLE Events</div>
-  <h1 id="title">Events</h1>
-  <div class="sub" id="sub"></div>
-</header>
-<main id="app"><div class="center">Loading…</div></main>
-<div class="toast" id="toast" role="status"><span id="toastMsg"></span><button type="button" id="undoBtn">Undo</button></div>
+  <div class="wrap">
+    <header>
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <defs><filter id="soft"><feGaussianBlur stdDeviation="4"/></filter></defs>
+        <g transform="translate(50 52) scale(1.25) translate(-50 -50)">
+          <circle cx="50" cy="44" r="28" fill="#f0a54a" opacity=".3" filter="url(#soft)"/>
+          <g fill="none" stroke="#ffd690" stroke-linecap="round">
+            <path d="M50 61 C48 47 52 37 50 28" stroke-width="2.2"/>
+            <path d="M50 37 C45 24 33 27 31 58" stroke-width="1.6"/>
+            <path d="M50 37 C55 24 67 27 69 58" stroke-width="1.6"/>
+            <path d="M50 44 C45 34 38 38 39 59" stroke-width="1.6"/>
+            <path d="M50 44 C55 34 62 38 61 59" stroke-width="1.6"/>
+          </g>
+          <path d="M27 59 C31 72 69 72 73 59 Z" fill="#10143f" stroke="#c27b3a" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M29 61.5 Q50 65 71 61.5" fill="none" stroke="#f0a54a" stroke-width="1"/>
+          <path d="M50 17 C54 22 54 27 50 28 C46 27 46 22 50 17 Z" fill="#fff6dd"/>
+        </g>
+      </svg>
+      <h1>Ordination Sunday:<br>Bring Something to Share</h1>
+      <p class="intro">Ken is preparing a meal for after the ceremony. If you'd like to add to the table, pick up to three things below. Store-bought is perfect. This is a live list, so everyone knows who's bringing what and it all gets covered.</p>
+    </header>
 
-<script>
-// The helper script in Google (hello@'s TOLE Events). 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6TvY8Xz3VGif1NBYBWbxwpvY2ImKLod5QbIAkgXsJ30aon6mCtjCpOKWPgyc7MCg/exec';
-// This page holds no roster data. Everything comes from the script, and only for a link
-// that carries the team key or an event's door key (after the #, which never reaches GitHub).
-// Circle colors (guides/Circle Colors.md): events are run by Anchor or Academy
-const CIRCLES = { 'Anchor':'#0a53a8', 'Academy':'#3d3d3d' };
-const PMA_PAY = ['Cash', 'Check', 'Precious metal'];
-const UNDO_MS = 6000;
+    <div class="card" id="noAccess" hidden>
+      <h2>This page opens from the link in your ordination email</h2>
+      <p class="sub" style="margin:0">Please use that link. If you opened it from WhatsApp or another app and see this, tap ⋯ and choose "Open in browser."</p>
+    </div>
 
-const $ = id => document.getElementById(id);
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-const store = {
-  get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-};
-// Asks the helper script to run one of its five allowed functions, through the front door
-// (a normal GET request; the script refuses "send" requests from GitHub).
-// ok(data) on success; bad(message) if anything goes wrong, so the page always says why.
-function call(fn, args, ok, bad) {
-  const url = SCRIPT_URL + '?fn=' + encodeURIComponent(fn) + '&args=' + encodeURIComponent(JSON.stringify(args || []));
-  fetch(url, { method:'GET', credentials:'omit', redirect:'follow', cache:'no-store' })
-    .then(r => { if (!r.ok) throw new Error('TOLE Events didn\'t answer (' + r.status + '). Try again in a moment.'); return r.json(); })
-    .then(res => { if (!res || !res.ok) throw new Error((res && res.error) || 'Something went wrong.'); ok(res.data); })
-    .catch(e => bad(String(e && e.message || e) === 'Failed to fetch'
-      ? 'Couldn\'t reach TOLE Events. Check your connection and try again.'
-      : String(e && e.message || e)));
-}
-function setCircle(name) { document.documentElement.style.setProperty('--c', CIRCLES[name] || CIRCLES.Anchor); }
-function parseDay(s) { const p = String(s).split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
-function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
-function dayLong(s) { return parseDay(s).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' }); }
-function dayShort(s) { return parseDay(s).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
-function copyText(btn, text) {
-  const label = btn.textContent;
-  const done = ok => { btn.textContent = ok ? 'Copied' : 'Press and hold to copy'; setTimeout(() => btn.textContent = label, 2500); };
-  const fallback = () => {
-    const t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', '');
-    t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t);
-    t.select(); t.setSelectionRange(0, text.length);
-    let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
-    t.remove(); done(ok);
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => done(true), fallback);
-  else fallback();
-}
+    <form class="card" id="signupForm" novalidate>
+      <h2>What can you bring?</h2>
+      <p class="sub">Choose up to three. The list updates on its own as others sign up.</p>
+      <div id="loading" class="loading">Loading the list…</div>
+      <div id="loadError" hidden>
+        <p class="error" id="loadErrorMsg" style="margin-top:0"></p>
+        <button type="button" class="btn small" id="retryBtn">Try again</button>
+      </div>
+      <div id="items"></div>
+      <p class="picked" id="pickedLine" hidden></p>
 
-const S = { key:'', team:false, id:'', data:null, filter:'all', q:'', pending:0, undo:null, toastTimer:null, poll:null };
+      <div id="nameBlock" hidden>
+        <label class="field" for="nameInput">Your name</label>
+        <input type="text" id="nameInput" autocomplete="name" placeholder="So everyone knows who's bringing it">
+        <label class="field" for="emailInput">Email</label>
+        <input type="email" id="emailInput" autocomplete="email" placeholder="For your confirmation">
+        <div class="error" id="errorMsg" role="alert" hidden></div>
+        <button type="submit" class="btn" id="submitBtn">I'll bring it</button>
+      </div>
+    </form>
 
-// ===================== Team home: all events =====================
-function openHome() {
-  stopPoll(); S.id = ''; setCircle('Anchor');
-  $('kick').textContent = 'TOLE Events · Anchor & Academy';
-  $('title').textContent = 'Events';
-  $('sub').textContent = 'RSVPs, rosters and check-in';
-  $('app').innerHTML = '<div class="center">Loading events…</div>';
-  call('listEvents', [S.key], list => {
-    const today = ymd(new Date());
-    const up = list.filter(e => e.date >= today).sort((a, b) => a.date < b.date ? -1 : 1);
-    const past = list.filter(e => e.date < today).sort((a, b) => a.date < b.date ? 1 : -1);
-    const row = e => {
-      const d = parseDay(e.date);
-      return '<button type="button" class="ev" data-id="' + esc(e.id) + '">' +
-        '<span class="d" style="background:' + (CIRCLES[e.circle] || CIRCLES.Anchor) + '"><span>' + d.toLocaleDateString('en-US', { month:'short' }) +
-        '</span><b>' + d.getDate() + '</b></span><span class="t"><b>' + esc(e.name) + '</b><span>' + esc(e.circle) + ' · ' + esc(e.type) +
-        (e.time ? ' · ' + esc(e.time) : '') + '<br>' + e.rsvps + ' on the roster' + (e.here ? ' · ' + e.here + ' checked in' : '') + '</span></span></button>';
-    };
-    $('app').innerHTML = '<button class="btn wide" type="button" id="newBtn">+ New event</button>' +
-      '<div class="section">Coming up</div>' + (up.length ? up.map(row).join('') : '<div class="hint" style="padding:0 4px">Nothing scheduled yet.</div>') +
-      (past.length ? '<div class="section">Past</div>' + past.map(row).join('') : '');
-    $('newBtn').onclick = renderNew;
-    $('app').querySelectorAll('.ev').forEach(b => b.onclick = () => go('e-' + b.dataset.id + '-' + S.key));
-  }, msg => { failed(msg, openHome); });
-}
-// A load failed: say why, and offer a retry button.
-function failed(msg, retry) {
-  $('app').innerHTML = '<div class="center">' + esc(msg) + '<br><br><button class="btn" type="button" id="retry">Try again</button></div>';
-  $('retry').onclick = retry;
-}
+    <div class="card" id="thanks" hidden>
+      <div class="big" aria-hidden="true">🌿</div>
+      <h2>Thank you</h2>
+      <p>You're bringing:</p>
+      <ul id="thanksList"></ul>
+      <p>A confirmation email is on its way. See you Sunday.</p>
+      <button type="button" class="btn small" id="againBtn">Back to the list</button>
+    </div>
 
-// ===================== New event =====================
-const N = { circle:'Anchor', type:'In person' };
-function renderNew() {
-  setCircle(N.circle);
-  $('title').textContent = 'New event';
-  $('sub').innerHTML = '<a href="#" id="back">‹ All events</a>';
-  $('back').onclick = e => { e.preventDefault(); openHome(); };
-  const me = store.get('ev-me') || {};
-  const t = new Date(); t.setDate(t.getDate() + 7);
-  $('app').innerHTML =
-    '<div class="card">' +
-      '<label class="f" for="nName">Event name</label><input type="text" id="nName" maxlength="100" placeholder="Full Moon Gathering">' +
-      '<label class="f">Hosted by</label><div class="seg" id="nCircle">' + Object.keys(CIRCLES).map(c =>
-        '<button type="button" data-v="' + c + '" aria-pressed="' + (c === N.circle) + '">' + c + '</button>').join('') + '</div>' +
-      '<label class="f">Where</label><div class="seg" id="nType">' + ['In person', 'Online'].map(c =>
-        '<button type="button" data-v="' + c + '" aria-pressed="' + (c === N.type) + '">' + c + '</button>').join('') + '</div>' +
-      '<div class="hint" style="margin-top:6px">In person: signing the PMA at check-in also makes someone Nexus 4.</div>' +
-      '<div class="two"><div><label class="f" for="nDate">Date</label><input type="date" id="nDate" value="' + ymd(t) + '"></div>' +
-      '<div><label class="f" for="nTime">Time</label><input type="text" id="nTime" maxlength="60" placeholder="7–9 pm"></div></div>' +
-      '<label class="f" for="nPlace">Place or Zoom <span class="hint">(optional, shown on the form)</span></label><input type="text" id="nPlace" maxlength="150">' +
-      '<label class="f" for="nPrice">Cost <span class="hint">(optional, shown on the form)</span></label><input type="text" id="nPrice" maxlength="60" placeholder="$20, cash welcome at the door">' +
-    '</div>' +
-    '<div class="card"><h2>You, the organizer</h2>' +
-      '<label class="f" for="nOrg">Your name</label><input type="text" id="nOrg" maxlength="60" value="' + esc(me.name || '') + '">' +
-      '<label class="f" for="nOrgE">Your email</label><input type="email" id="nOrgE" maxlength="120" value="' + esc(me.email || '') + '">' +
-      '<div class="hint" style="margin-top:6px">If someone RSVPs who isn\'t on the master list, you\'ll get an email to check who they are.</div>' +
-    '</div>' +
-    '<button class="btn wide" type="button" id="nGo">Create the event</button><div class="err" id="nErr" role="alert"></div>';
-  const seg = (id, key) => $(id).onclick = e => { const b = e.target.closest('button'); if (!b) return;
-    N[key] = b.dataset.v; $(id).querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
-    if (key === 'circle') setCircle(N.circle); };
-  seg('nCircle', 'circle'); seg('nType', 'type');
-  $('nGo').onclick = () => {
-    const f = { name:$('nName').value, circle:N.circle, type:N.type, date:$('nDate').value, time:$('nTime').value,
-      place:$('nPlace').value, price:$('nPrice').value, organizer:$('nOrg').value, orgEmail:$('nOrgE').value };
-    store.set('ev-me', { name:f.organizer.trim(), email:f.orgEmail.trim() });
-    $('nGo').disabled = true; $('nGo').textContent = 'Making the form and roster…'; $('nErr').textContent = '';
-    call('createEvent', [S.key, f], d => {
-      S.data = d; S.id = d.event.id;
-      history.replaceState(null, '', '#e-' + d.event.id + '-' + S.key);
-      renderEvent(true);
-    }, msg => { $('nGo').disabled = false; $('nGo').textContent = 'Create the event'; $('nErr').textContent = msg; });
-  };
-}
+    <footer>From the TOLE community, with love.</footer>
+  </div>
 
-// ===================== One event: check-in =====================
-function openEvent(id, key) {
-  S.id = id; S.key = key;
-  $('app').innerHTML = '<div class="center">Opening the roster…</div>';
-  call('getRoster', [id, key], d => { S.data = d; S.team = d.team; renderEvent(false); startPoll(); },
-    msg => failed(msg, () => openEvent(id, key)));
-}
+  <script>
+    // The Google Apps Script that keeps the list. Update it with
+    // Manage deployments ▸ Edit ▸ New version, never "New deployment".
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzEtwPMZRZIXtuZOMJ1gZ8EXX_fltgSxkctYq4QZbpOMRWVo_2HcyvtL-QFl7qdVkbw/exec';
+    var REFRESH_MS = 30000;   // check for others' sign-ups every 30 seconds
 
-function renderEvent(justMade) {
-  const d = S.data, e = d.event;
-  setCircle(e.circle);
-  $('kick').textContent = e.circle + ' · ' + e.type;
-  $('title').textContent = e.name;
-  $('sub').innerHTML = esc(dayLong(e.date) + (e.time ? ', ' + e.time : '') + (e.place ? ' · ' + e.place : '')) +
-    (d.team ? '<br><a href="#" id="back">‹ All events</a>' : '');
-  if (d.team) $('back').onclick = ev => { ev.preventDefault(); go('t-' + S.key); };
+    var KEY = decodeURIComponent((location.hash || '').replace(/^#/, '')).trim();
+    var selected = {};        // id -> true
+    var list = null;          // last list from the script
+    var busy = false;         // true while sending, so a refresh doesn't redraw mid-send
 
-  let h = '';
-  if (d.team && d.links) {
-    const L = d.links;
-    h += '<details class="card"' + (justMade ? ' open' : '') + '><summary>' + (justMade ? 'Your event is ready. Here are its links' : 'Links for this event') + '</summary>' +
-      '<div class="row"><b>RSVP form</b><div class="hint">Send this to the people you\'re inviting.</div>' +
-        '<div class="link"><code>' + esc(L.rsvp) + '</code><button class="btn small" type="button" data-copy="' + esc(L.rsvp) + '">Copy</button></div></div>' +
-      '<div class="row"><b>Door link</b><div class="hint">For a volunteer checking people in. It opens only this event.</div>' +
-        '<div class="link"><code>' + esc(L.door) + '</code><button class="btn small ghost" type="button" data-copy="' + esc(L.door) + '">Copy</button></div></div>' +
-      '<div class="row"><a href="' + esc(L.sheet) + '" target="_blank" rel="noopener">Open the roster sheet</a> &nbsp;·&nbsp; ' +
-        '<a href="' + esc(L.form) + '" target="_blank" rel="noopener">Edit the form</a></div></details>';
-  }
-  // Team only, once the event has started: the after-event report and follow-up checklist
-  if (d.team && (e.isPast || e.isToday)) h += '<div class="card"><button class="btn ghost wide" type="button" id="repBtn">📋 Follow-up report</button>' +
-    '<div class="hint" id="repMsg" style="margin-top:8px">Who came, who didn\'t, PMA and payments, and the follow-up checklist. It also goes to anchor@ and academy@ the morning after.</div></div>';
-  h += '<div id="stats"></div><div class="sticky"><input type="search" id="q" placeholder="Search names" autocomplete="off" value="' + esc(S.q) + '">' +
-    '<div class="chips" id="chips"></div></div><div id="list"></div>' +
-    '<button class="btn ghost wide" type="button" id="walkBtn" style="margin-top:6px">+ Add someone at the door</button><div id="walk"></div>';
-  $('app').innerHTML = h;
-  $('app').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(b, b.dataset.copy));
-  $('q').oninput = () => { S.q = $('q').value; drawList(); };
-  $('walkBtn').onclick = renderWalkIn;
-  const rb = $('repBtn');
-  if (rb) rb.onclick = () => {
-    rb.disabled = true; rb.classList.add('working'); rb.textContent = 'Making the report…';
-    call('makeReport', [e.id, S.key], r => {
-      if (!rb.isConnected) return;
-      rb.disabled = false; rb.classList.remove('working'); rb.textContent = '📋 Refresh the report';
-      $('repMsg').innerHTML = (r.emailed ? 'Done, and emailed to ' + esc(r.to) + '. ' : r.already ? 'Refreshed (it was already emailed to the circles). ' : 'Done. ') +
-        '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">Open the report</a>';
-    }, msg => {
-      if (!rb.isConnected) return;
-      rb.disabled = false; rb.classList.remove('working'); rb.textContent = '📋 Follow-up report';
-      $('repMsg').innerHTML = '<span class="err">' + esc(msg) + '</span>';
+    function $(id) { return document.getElementById(id); }
+
+    // Asks the script through its front door (no cookies, no Google sign-in)
+    function callScript(fn, args) {
+      var url = SCRIPT_URL + '?fn=' + encodeURIComponent(fn) +
+        '&args=' + encodeURIComponent(JSON.stringify([KEY].concat(args || [])));
+      return fetch(url, { method: 'GET', credentials: 'omit', redirect: 'follow' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('The server answered with an error (' + r.status + ').');
+          return r.json();
+        })
+        .then(function (res) {
+          if (!res || !res.ok) throw new Error((res && res.error) || 'Something went wrong.');
+          return res.data;
+        });
+    }
+
+    function showNoAccess() {
+      $('noAccess').hidden = false;
+      $('signupForm').hidden = true;
+    }
+
+    function maxPicks() { return (list && list.maxPicks) || 3; }
+    function pickedCount() { return Object.keys(selected).length; }
+
+    function render() {
+      var wrap = $('items');
+      wrap.innerHTML = '';
+      var items = (list && list.items) || [];
+      // Drop any picks that filled up since the last look
+      items.forEach(function (it) { if (it.names.length >= it.spots) delete selected[it.id]; });
+      var atLimit = pickedCount() >= maxPicks();
+
+      items.forEach(function (it) {
+        var left = Math.max(0, it.spots - it.names.length);
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'item';
+        var sp = document.createElement('span'); sp.className = 'spots';
+        sp.textContent = left ? left + ' of ' + it.spots + ' open' : 'Full';
+        b.appendChild(sp);
+        var n = document.createElement('span'); n.className = 'name'; n.textContent = it.name; b.appendChild(n);
+        if (it.bring) { var br = document.createElement('span'); br.className = 'bring'; br.textContent = ' · ' + it.bring; b.appendChild(br); }
+        if (it.names.length) { var w = document.createElement('span'); w.className = 'who'; w.textContent = 'Bringing: ' + it.names.join(', '); b.appendChild(w); }
+
+        if (!left) {
+          b.disabled = true;
+        } else {
+          var on = !!selected[it.id];
+          b.classList.toggle('selected', on);
+          b.classList.toggle('dim', atLimit && !on);
+          b.setAttribute('aria-pressed', String(on));
+          b.addEventListener('click', function () {
+            if (selected[it.id]) delete selected[it.id];
+            else if (pickedCount() < maxPicks()) selected[it.id] = true;
+            else { showPicked('You can choose up to ' + maxPicks() + '. Tap one you picked to swap it.'); return; }
+            render();
+          });
+        }
+        wrap.appendChild(b);
+      });
+      showPicked();
+      $('nameBlock').hidden = !items.length;
+    }
+
+    function showPicked(msg) {
+      var el = $('pickedLine');
+      var n = pickedCount();
+      el.textContent = msg || (n ? "You've picked " + n + ' of ' + maxPicks() + '.' : '');
+      el.hidden = !el.textContent;
+    }
+
+    function load(quiet) {
+      if (!quiet) { $('loading').hidden = false; $('loadError').hidden = true; }
+      return callScript('getList')
+        .then(function (data) {
+          if (busy) return;
+          list = data;
+          $('loading').hidden = true;
+          $('loadError').hidden = true;
+          render();
+        })
+        .catch(function (err) {
+          if (err.message === 'NO_ACCESS') { showNoAccess(); return; }
+          if (quiet) return;   // a missed background check just waits for the next one
+          $('loading').hidden = true;
+          $('loadErrorMsg').textContent = "Couldn't load the list. Check your connection and try again. (" + err.message + ')';
+          $('loadError').hidden = false;
+        });
+    }
+
+    function showError(msg) { $('errorMsg').textContent = msg; $('errorMsg').hidden = false; }
+
+    $('retryBtn').addEventListener('click', function () { load(false); });
+    $('againBtn').addEventListener('click', function () {
+      $('thanks').hidden = true;
+      $('signupForm').hidden = false;
+      load(false);
     });
-  };
-  drawList();
-}
 
-function counts() {
-  const p = S.data.people;
-  return { all:p.length, here:p.filter(x => x.checkin).length, paid:p.filter(x => x.paid).length,
-           nopma:p.filter(x => !x.pma).length, notyet:p.filter(x => !x.checkin).length, isnew:p.filter(x => x.isNew).length };
-}
+    $('signupForm').addEventListener('submit', function (event) {
+      event.preventDefault();   // stay on this page
+      $('errorMsg').hidden = true;
+      var ids = Object.keys(selected);
+      var name = $('nameInput').value.trim();
+      if (!ids.length) { showError('Pick at least one item.'); return; }
+      if (!name) { showError('Please add your name.'); return; }
+      var email = $('emailInput').value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Please add a valid email.'); return; }
 
-function drawList() {
-  const c = counts();
-  $('stats').innerHTML = '<div class="stats">' +
-    '<div class="stat"><b>' + c.all + '</b><span>on roster</span></div>' +
-    '<div class="stat"><b>' + c.here + '</b><span>here</span></div>' +
-    '<div class="stat"><b>' + c.paid + '</b><span>paid</span></div>' +
-    '<div class="stat' + (c.nopma ? ' rose' : '') + '"><b>' + c.nopma + '</b><span>no PMA</span></div></div>';
-  const F = [['all', 'Everyone'], ['notyet', 'Not here yet'], ['nopma', 'No PMA'], ['unpaid', 'Not paid']];
-  if (c.isnew) F.push(['isnew', 'New']);
-  $('chips').innerHTML = F.map(f => '<button type="button" class="chip" data-f="' + f[0] + '" aria-pressed="' + (S.filter === f[0]) + '">' + f[1] + '</button>').join('');
-  $('chips').onclick = e => { const b = e.target.closest('.chip'); if (!b) return; S.filter = b.dataset.f; drawList(); };
+      var btn = $('submitBtn');
+      busy = true;
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      callScript('claim', [{ name: name, email: email, ids: ids }])
+        .then(function (res) {
+          busy = false;
+          btn.disabled = false;
+          btn.textContent = "I'll bring it";
+          if (!res || !res.ok) { showError((res && res.message) || 'Something went wrong. Please try again.'); load(true); return; }
+          var ul = $('thanksList');
+          ul.innerHTML = '';
+          res.items.forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+          selected = {};
+          $('signupForm').hidden = true;
+          $('thanks').hidden = false;
+          window.scrollTo(0, 0);
+        })
+        .catch(function (err) {
+          busy = false;
+          btn.disabled = false;
+          btn.textContent = "I'll bring it";
+          if (err.message === 'NO_ACCESS') { showNoAccess(); return; }
+          showError("That didn't go through, so nothing was saved. Please try again. (" + err.message + ')');
+        });
+    });
 
-  const q = S.q.trim().toLowerCase();
-  const list = S.data.people
-    .filter(p => !q || (p.first + ' ' + p.last + ' ' + p.email).toLowerCase().indexOf(q) !== -1)
-    .filter(p => S.filter === 'all' || (S.filter === 'notyet' && !p.checkin) || (S.filter === 'nopma' && !p.pma) ||
-                 (S.filter === 'unpaid' && !p.paid) || (S.filter === 'isnew' && p.isNew))
-    .sort((a, b) => (a.first + a.last).toLowerCase() < (b.first + b.last).toLowerCase() ? -1 : 1);
-
-  if (!S.data.people.length) { $('list').innerHTML = '<div class="card center" style="padding:24px">No RSVPs yet. Share the RSVP form link and they\'ll appear here.</div>'; return; }
-  if (!list.length) { $('list').innerHTML = '<div class="hint" style="padding:8px 4px">Nobody matches.</div>'; return; }
-  $('list').innerHTML = list.map(card).join('');
-  $('list').querySelectorAll('[data-a]').forEach(el => {
-    const ev = el.tagName === 'SELECT' ? 'onchange' : 'onclick';
-    el[ev] = () => tap(el.closest('.p').dataset.email, el.dataset.a, el);
-  });
-}
-
-function card(p) {
-  const tags = [];
-  tags.push(p.pma ? '<span class="tag yes">PMA signed' + (p.pmaDate ? ' ' + esc(dayShort(p.pmaDate)) : '') + '</span>'
-                  : '<span class="tag no">No PMA</span>');
-  tags.push(p.community ? '<span class="tag yes">In community</span>' : '<span class="tag">Not in community</span>');
-  if (p.nexus) tags.push('<span class="tag">' + esc(p.nexus) + '</span>');
-  if (p.isNew) tags.push('<span class="tag new">New: check who this is</span>');
-  if (!p.onList) tags.push('<span class="tag new">Not on master list</span>');
-  return '<div class="p' + (p.pma ? '' : ' nopma') + '" data-email="' + esc(p.email) + '">' +
-    '<div class="top"><div class="who"><div class="nm">' + esc(p.first + ' ' + p.last) + '</div>' +
-      '<div class="meta">' + esc(p.email) + (p.phone ? ' · ' + esc(p.phone) : '') + (p.rsvp ? ' · ' + esc(p.rsvp) : '') + '</div></div>' +
-      '<button type="button" class="ck' + (p.checkin ? ' on' : '') + '" data-a="checkin">' + (p.checkin ? '✓ Here ' + esc(p.checkin) : 'Check in') + '</button></div>' +
-    '<div class="tags">' + tags.join('') + '</div>' +
-    '<div class="acts">' +
-      '<button type="button" data-a="paid" class="' + (p.paid ? 'on' : '') + '">' + (p.paid ? '✓ ' + esc(p.paid) : 'Paid') + '</button>' +
-      (p.pma ? '' : '<button type="button" class="pma" data-a="pma">Signed PMA today</button>') +
-      '<select data-a="pmaPay" aria-label="PMA payment"><option value="">' + (p.pmaPay ? 'Clear PMA payment' : 'PMA payment…') + '</option>' +
-        PMA_PAY.map(x => '<option' + (p.pmaPay === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select>' +
-    '</div></div>';
-}
-
-function tap(email, action, el) {
-  const p = S.data.people.filter(x => x.email === email)[0]; if (!p) return;
-  const name = p.first || p.email;
-  let value = null, msg = '';
-  if (action === 'checkin') { value = !p.checkin; msg = value ? name + ' is checked in.' : name + ' is no longer checked in.'; }
-  if (action === 'paid') { value = !p.paid; msg = value ? name + ' is marked paid.' : name + ' is marked not paid.'; }
-  if (action === 'pma') { msg = name + ' signed the PMA today.'; }
-  if (action === 'pmaPay') { value = el.value; msg = value ? name + '\'s PMA payment: ' + value + '.' : name + '\'s PMA payment cleared.'; }
-  const box = el.closest('.p'); box.classList.add('busy'); S.pending++;
-  call('act', [S.id, S.key, email, action, value], r => {
-    S.pending--; S.data.people = r.people; drawList();
-    showToast(msg, { email:email, prev:r.prev, name:name });
-  }, err => { S.pending--; box.classList.remove('busy'); showToast(err, null); drawList(); });
-}
-
-function showToast(msg, undo) {
-  clearTimeout(S.toastTimer);
-  S.undo = undo;
-  $('toastMsg').textContent = msg;
-  $('undoBtn').style.display = undo ? '' : 'none';
-  $('toast').classList.add('show');
-  S.toastTimer = setTimeout(() => { $('toast').classList.remove('show'); S.undo = null; }, undo ? UNDO_MS : 4000);
-}
-$('undoBtn').onclick = () => {
-  const u = S.undo; if (!u) return;
-  clearTimeout(S.toastTimer); S.undo = null;
-  $('toastMsg').textContent = 'Undoing…'; $('undoBtn').style.display = 'none';
-  S.pending++;
-  call('act', [S.id, S.key, u.email, 'restore', u.prev], r => {
-    S.pending--; S.data.people = r.people; drawList(); showToast('Undone for ' + u.name + '.', null);
-  }, err => { S.pending--; showToast(err, null); });
-};
-
-// ---------- Walk-ins ----------
-function renderWalkIn() {
-  $('walkBtn').style.display = 'none';
-  $('walk').innerHTML = '<div class="card"><h2>Add someone at the door</h2>' +
-    '<div class="two"><div><label class="f" for="wF">First name</label><input type="text" id="wF" maxlength="60"></div>' +
-    '<div><label class="f" for="wL">Last name</label><input type="text" id="wL" maxlength="60"></div></div>' +
-    '<label class="f" for="wE">Email</label><input type="email" id="wE" maxlength="120" autocomplete="off">' +
-    '<label class="f" for="wP">Phone</label><input type="tel" id="wP" maxlength="40">' +
-    '<div class="hint" style="margin-top:6px">They\'re checked in right away. If they\'re not on the master list, they\'re added and the organizer gets a note to follow up.</div>' +
-    '<div class="two" style="margin-top:12px"><div><button class="btn ghost wide" type="button" id="wX">Cancel</button></div>' +
-    '<div><button class="btn wide" type="button" id="wGo">Add & check in</button></div></div><div class="err" id="wErr" role="alert"></div></div>';
-  $('wF').focus();
-  $('wX').onclick = () => { $('walk').innerHTML = ''; $('walkBtn').style.display = ''; };
-  $('wGo').onclick = () => {
-    const f = { first:$('wF').value, last:$('wL').value, email:$('wE').value, phone:$('wP').value };
-    $('wGo').disabled = true; $('wErr').textContent = ''; S.pending++;
-    call('addWalkIn', [S.id, S.key, f], people => {
-      S.pending--; S.data.people = people; $('walk').innerHTML = ''; $('walkBtn').style.display = '';
-      drawList(); showToast((f.first || 'They') + ' is added and checked in.', null);
-    }, msg => { S.pending--; $('wGo').disabled = false; $('wErr').textContent = msg; });
-  };
-}
-
-// ---------- Keep two door phones in step ----------
-function startPoll() {
-  stopPoll();
-  S.poll = setInterval(() => {
-    if (document.hidden || S.pending || S.undo || !S.id) return;
-    const a = document.activeElement;
-    if (a && (a.tagName === 'INPUT' && a.id !== 'q' || a.tagName === 'SELECT')) return;
-    call('getRoster', [S.id, S.key], d => { if (S.pending || S.undo) return; S.data.people = d.people; drawList(); }, () => {});
-  }, 30000);
-}
-function stopPoll() { if (S.poll) clearInterval(S.poll); S.poll = null; }
-
-// ===================== Start =====================
-// The part after # says what to show: t-<team key> = all events; e-<event>-<key> = one roster.
-function go(hash) { if (location.hash === '#' + hash) route(hash); else location.hash = hash; }   // hashchange runs route
-function route(h) {
-  h = decodeURIComponent(String(h || '')).replace(/^#/, '').trim();
-  let m;
-  if ((m = h.match(/^t-([A-Za-z]{20})$/))) { S.key = m[1]; S.team = true; openHome(); return; }
-  if ((m = h.match(/^e-([A-Za-z]{8})-([A-Za-z]{12,20})$/))) { openEvent(m[1], m[2]); return; }
-  $('title').textContent = 'TOLE Events';
-  $('app').innerHTML = '<div class="center">This page needs a team or door link. Ask the Anchor or Academy circle for yours.</div>';
-}
-window.addEventListener('hashchange', () => route(location.hash));
-route(location.hash);
-</script>
+    if (!KEY) {
+      showNoAccess();
+    } else {
+      load(false);
+      // Keep the list current while the page is open and visible
+      setInterval(function () { if (!document.hidden && !$('signupForm').hidden) load(true); }, REFRESH_MS);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden && list) load(true); });
+    }
+  </script>
 </body>
 </html>
